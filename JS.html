@@ -1,0 +1,241 @@
+<script>
+    window.addEventListener('load',cargaDatalists);
+    const ikasleIzena= document.getElementById("datalistOptions"); //todos los datos de la BD
+    let wsIkasle="";
+    let wsciclo="";
+    let wsParcial="";
+    let datuaAsigna="";
+    let wDatuaAsigna=[];
+    let cveDocente="";
+    let nomDocente="";
+    let nomAsig="";
+    let correoInst="";
+    let wsURL="";
+    let wsIndex=0;
+    let wscorreo="";
+    let wsAsignaCve="";
+    let wsparcialTab="";
+    let califLista=0;
+    
+
+    function cargaDatalists()                       //DISPARA LA CARGA DE LOS DATALISTS
+    {
+        let elemenFocus=document.getElementById("datalistOptions");
+        elemenFocus.focus();
+                    //primero carga alumnos
+                   //busca periodos segun alumno en bd calificaciones
+                   //obtiene parciales del periodo de alumno seleccionado
+                   //asignaturas disponibles en periodo y parcial
+                   //muestra datos de bd y lista
+
+      google.script.run
+      .withSuccessHandler(cargaDatalistAlumno)
+      .withFailureHandler(proc=>{console.log("error al cargar datalist")})
+      .DataAlumnos()  //Obtiene los datos de la BD de alumnos
+    }
+
+
+    function cargaDatalistAlumno(dataAlumnos)  //toma los datos de la BD y los carga en el datalist
+    {
+      const inputAlumnos = document.getElementById("datalistOptions");  //formulario html datalist id
+      dataAlumnos.sort();
+      dataAlumnos.forEach(alumno => 
+      {
+       
+        const ilara=document.createElement("option") //crea un elemento en el datalist con los datos de cada alumno
+        ilara.value = alumno[0];
+      
+       inputAlumnos.appendChild(ilara);
+      });
+    }
+
+    function actualizaCiclo()
+    {
+        var form1 =document.getElementById("formManto");//obtiene los valores capturados en el formulario
+        wsIkasle =form1[0].value;                 //usa la primera opcion para validar el ciclo escolar de la OpEd   
+         
+        google.script.run
+        .withSuccessHandler(cargaDatalistCicloEsc)
+        .withFailureHandler(proc=>{console.log("error al cargar el datalist Ciclo Esc")})
+        .obtieneCicloEsc(wsIkasle)
+
+        //cargaDatalistAsigna();
+    }
+
+    function cargaDatalistCicloEsc(datuaCicloEscArr)
+    {
+        if (datuaCicloEscArr.length> 0)
+        {
+            const inputCicloEsc=document.getElementById("listaCiclo");
+            datuaCicloEscArr.forEach(ilara=>{
+                    const opcionCE=document.createElement("option");
+                    opcionCE.value=ilara[0];
+                    inputCicloEsc.appendChild(opcionCE);
+            })
+        }
+        else
+        {
+            errorCiclo();
+        }
+    }
+
+    function actualizaMaterias()
+    {
+        var form1 =document.getElementById("formManto");//obtiene los valores capturados en el formulario
+        wsciclo=form1[1].value;                 //usa la primera opcion para validar el ciclo escolar de la OpEd   
+        var wsParcialL=form1[2].value; 
+        switch(wsParcialL)
+        {
+            case 'PRIMERO':
+                wsParcial=1;
+                break;
+            case 'SEGUNDO':
+                wsParcial=2;
+                break;
+            case 'TERCERO':
+                wsParcial=3;
+                break;
+            case 'FINAL':
+                wsParcial=4;
+                break;
+            case 'GLOBAL':
+                wsParcial=9;
+                break;
+            default:
+            wsParcial=0;
+        }
+        
+        if(wsParcial>0){
+            google.script.run
+            .withSuccessHandler(cargaAsigna)
+            .withFailureHandler(proc=>{console.log("error al cargar el datalist de asignaturas")})
+            .obtieneAsignatura(wsIkasle,wsciclo,wsParcial)
+        }
+        else
+        {
+            alert("   \n    ERROR EN EL PROCESO \n ****** PARCIAL INVALIDO ******");
+            return;
+        }
+    }
+
+    function cargaAsigna(datuaAsigna)
+    {
+        const inputAsigna=document.getElementById("dataListAsigna");
+        
+        if(datuaAsigna.length>0)
+        {
+            datuaAsigna.forEach(ilara=>{
+                const opcionAsig=document.createElement('option');
+                opcionAsig.value=ilara[0];
+                inputAsigna.appendChild(opcionAsig);
+            })
+        }
+        else
+        {
+            errorParcial();
+        }
+    }
+
+    function acualizaDatosTabla()
+    {
+        
+        var form1 =document.getElementById("formManto");//obtiene los valores capturados en el formulario
+        nomAsig=form1[3].value;   
+        //Obtener datos a mostrar provenientes de la tabla de calificaciones de la asignatura seleccionada
+        google.script.run
+        .withSuccessHandler(muestraTabla)
+        .withFailureHandler(proc=>{console.log("error al armar la vista de Tabla")})
+        .obtieneDatosTabla(wsIkasle,wsciclo,wsParcial,nomAsig)
+    }
+
+    function muestraTabla(datuaTabla)
+    {
+        //console.log("datuaTabla:"+datuaTabla)
+        if (datuaTabla.length>0)
+        {
+            document.getElementById('nomTabla').value=datuaTabla[0];
+            document.getElementById('asignaTabla').value=datuaTabla[1];
+            document.getElementById('cicloTabla').value=datuaTabla[2];
+            document.getElementById('parcialTabla').value=datuaTabla[3];
+            document.getElementById('califTabla').value=datuaTabla[4];
+
+            wsURL=datuaTabla[5];
+            wsIndex=datuaTabla[6];
+            wscorreo=datuaTabla[7];
+            wsciclo=datuaTabla[2];
+            wsAsignaCve=datuaTabla[8];
+            wsparcialTab=datuaTabla[3];
+            obtieneLista();
+        }
+        else
+        {
+            errorAsigna();
+        }
+        
+    }
+
+    function obtieneLista()
+    {
+        //llama la funcion para obtener los datos a mostrar de la lista de asistencia involucrada
+        google.script.run
+        .withSuccessHandler(muestraLista)
+        .withFailureHandler(proc=>(console.log("Error al armar la vista de Lista de Asistencia")))
+        .obtieneDatosLista(wsIkasle,wsURL)
+            
+    }
+
+    function muestraLista(datosLista)
+    {
+        //console.log("datoslista:"+datosLista)
+        document.getElementById('nomLista').value=datosLista[0];
+        document.getElementById('asignaLista').value=datosLista[1];
+        document.getElementById('cicloLista').value=datosLista[2];
+        document.getElementById('parcialLista').value=datosLista[3];
+        document.getElementById('califLista').value=datosLista[4];
+        califLista=datosLista[4];
+    }
+
+    function actualiza()
+    {
+        event.preventDefault();
+        google.script.run
+        .withFailureHandler(error=>{console.log("error al actualizar calificacion")})
+        .withSuccessHandler(erroralcargar)
+        .actualizaCalif(wsIndex,wscorreo,wsciclo,wsAsignaCve,wsparcialTab,califLista);
+        //Actualiza la tabla de calificaciones buscando el alumno solicitado y modificando la calificacion
+        // utiliza el indice de la BD y la calificacion. Para estar seguro valida la materia, el correo, 
+        //parcial y ciclo
+
+        
+
+    }
+
+    function erroralcargar(wserror)
+    { 
+        if (wserror==1)
+        {
+        alert("   \n     ERROR EN EL PROCESO \n **** ALUMNO NO ACTUALIZADO *****")
+        }
+        else
+        {
+        alert("**************************\n     . \n Cambios realizados, \nrecargue la página (F5)")
+        document.getElementById('formManto').reset()
+        }       
+    }
+
+    function errorCiclo()
+    {
+        alert("   \n    ERROR EN EL PROCESO \n ****** ALUMNO NO TIENE DATOS EN TABLA CALIFICACIONES ******");
+    }
+
+    function errorParcial()
+    {
+        alert("   \n    ERROR EN EL PROCESO \n ****** ALUMNO NO TIENE DATOS EN TABLA CALIFICACIONES PARA ESE PARCIAL ******");
+    }
+
+    function errorAsigna()
+    {
+        alert("   \n    ERROR EN EL PROCESO \n ****** ALUMNO NO TIENE DATOS EN TABLA CALIFICACIONES PARA ESTA ASIGNATURA ******");
+    }
+
+</script>

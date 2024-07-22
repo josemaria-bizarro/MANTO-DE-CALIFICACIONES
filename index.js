@@ -1,0 +1,16 @@
+const bd_id='1T5KQCvXiYsGewSoc_A8qugUwSs-ft1NNds4oaNgQxkw'; //CATALOGO CEEC
+const bd = SpreadsheetApp.openById(bd_id);
+const bdAsigna=bd.getSheetByName('TABLA ASIGNATURAS');
+const bdPeriodo=bd.getSheetByName('PERIODOS EDUCATIVOS');
+const bdOpcEdu=bd.getSheetByName('OPCIONES EDUCATIVAS');
+const bdikasleId='1kzmgvrbkQ7ehUslRxR4ghkpSeI2yT99M3h-Dyo-EEVY';  //CATALOGO ALUMNOS
+const bdikasle=SpreadsheetApp.openById(bdikasleId);
+const bdikasleOrria=bdikasle.getSheetByName('ACTIVOS_FORMATEADO');
+const bdikasleDatuak=bdikasleOrria.getDataRange().getDisplayValues();
+const tablaCalifid='1VxNaZwRntqPYN12MhOqzPMlCBWl-vQU7BRb3JLdYXsE';  //id TABLA CALIFICACIONES
+const tablaCalBd=SpreadsheetApp.openById(tablaCalifid);
+const tablaCalifOrria=tablaCalBd.getSheetByName('CALIFICACIONES');
+const tablaCalDatuak=tablaCalifOrria.getDataRange().getDisplayValues();
+let datuaCicloEscArr=[];
+let ikasleCorreo="";
+let wserror=0;

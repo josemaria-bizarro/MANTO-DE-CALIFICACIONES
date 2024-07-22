@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es-mx">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Cambio de Calificacion</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+        <?!= include('CSS') ?> <!-- aqui se incluyen los datos css -->
+    </head>
+
+    <body>
+        <div class="encabeza">
+            <img src="https://drive.google.com/file/d/1FWmr4utpKYRcFSRTz-XQTvQyudbHZvMw/view?usp=sharing" alt="logo">
+            <h1 class="titulo">Cambio de Calificaciones</h1>
+        </div>
+       
+
+    <p style="color: dodgerblue;size: 8px;margin-left: 50px;margin-right: 50px;">Ingresa algun texto para la busqueda de alumno</p>
+
+    <form id="formManto" onsubmit="actualiza()"><!-- Nombre del formulario que almacena datos -->
+        <div class="formulario">
+            
+            <div class="elemento1"> 
+                <label for="alumnosDataList" class="form-label">Alumno:</label>
+            </div>
+            <div class="elemento1a"> <!--Lista desplegable de alumnos-->
+                <input class="form-control" list="datalistOptions" id="alumnosDataList" placeholder="Escribe para buscar..."
+                  onchange="actualizaCiclo()" size="50" required>
+                <datalist id="datalistOptions"></datalist>
+            </div>
+
+            <div class="elemento2">
+                <label for="periodoDataList" class="form-label">Ciclo:</label>
+            </div>
+            <div class="elemento2a"><!-- Lista desplegable de Ciclo escolar-->
+                <input class="form-control" list="listaCiclo" id="periodoDataList" placeholder="Escribe el ciclo..." 
+                size="50px" required>
+                <datalist id="listaCiclo"></datalist>
+            </div>
+
+            <div class="elemento3">
+                <label for="parcialDataList" class="form-label">Parcial:</label>
+            </div>
+            <div class="elemento3a"><!-- Lista desplegable del Parcial-->
+                <select class="form-select" aria-label="parcial" name="parcial" id="parcialDataList" 
+                onchange="actualizaMaterias()" >
+                    <option value=""></option>
+                    <option value="PRIMERO">Primero</option>
+                    <option value="SEGUNDO">Segundo</option>
+                    <option value="TERCERO">Tercero</option>
+                    <option value="FINAL">Final</option>
+                    <option value="GLOBAL">Global</option>
+                </select> 
+            </div>
+
+            <div class="elemento4">
+                <label for="asignaturaDataList" class="form-label">Asignatura:</label>
+            </div>
+            <div class="elemento4a"><!-- Lista desplegable de asignaturas-->
+                <input class="form-control" list="dataListAsigna" id="asignaturaDataList" placeholder="Elije la asignatura"
+                onchange="acualizaDatosTabla()" size="50px" required>
+                <datalist id="dataListAsigna">
+                </datalist>
+            </div>
+
+            <!-- <div class="elemento5">
+                <label for="datosTabla" class="form-label">Datos Tabla</label>
+            </div>-->
+
+            <div class="elemento6">
+                <label for="nomTabla" class="form-label">DATOS TABLA</label><!--MUESTRA LOS DATOS ORIGINALES EN BD-->
+                <br>
+                <label for="nomTabla" class="form-label">Nombre</label>
+                <br>
+                <input type="text" class="form-control" id="nomTabla" size="30" readonly>
+            </div>
+
+            <div class="elemento7">
+                <br><label for="asignaTabla" class="form-label">Asignatura</label>
+                <br>
+                <input type="text" class="form-control" id="asignaTabla" size="40" readonly>
+            </div>
+
+            <div class="elemento8">
+                <br>
+                <label for="cicloTabla" class="form-label">Ciclo</label>
+                <br>
+                <input type="text" class="form-control" id="cicloTabla" size="15" readonly>
+            </div>
+
+            <div class="elemento9">
+                <br>
+                <label for="parcialTabla" class="form-label">Parcial</label>
+                <br>
+                <input type="text" class="form-control" id="parcialTabla" size="5" readonly>
+            </div>
+
+            <div class="elemento10">
+                <br>
+                <label for="califTabla" class="form-label">Calificación</label>
+                <br>
+                <input type="number" class="form-control" id="califTabla" size="5" readonly>
+            </div>
+
+            <!-- <div class="elemento11">
+                <label for="datosLista" class="form-label">DATOS EN LISTA</label>
+            </div> -->
+
+            <div class="elemento12">
+                <label for="nomLista" class="form-label">DATOS EN LISTA</label><!--MUESTRA LOS DATOS A CAMBIAR EN LA LISTA DE ASISTENCIA-->
+                <br>
+                <label for="nomLista" class="form-label">Nombre</label>
+                <br>
+                <input type="text" class="form-control" id="nomLista" size="30" readonly>
+            </div>
+
+            <div class="elemento13">
+                <br>
+                <label for="asignaLista" class="form-label">Asignatura</label>
+                <br>
+                <input type="text" class="form-control" id="asignaLista" size="40" readonly>
+            </div>
+
+            <div class="elemento14">
+                <br>
+                <label for="cicloLista" class="form-label">Ciclo</label>
+                <br>
+                <input type="text"  class="form-control" id="cicloLista" size="15" readonly>
+            </div>
+
+            <div class="elemento15">
+                <br>
+                <label  for="parcialLista" class="form-label">Parcial</label>
+                <br>
+                <input  type="text" class="form-control" id="parcialLista" size="15" readonly>  
+            </div>
+
+            <div    class="elemento16">
+                <br>
+                <label  for="califLista"    class="form-label">Calificación</label>
+                <br>
+                <input type="number" class="form-control" id="califLista" size="5" readonly>
+            </div>
+
+    </div>
+
+    <br>
+    <button class="button"  type="submit">Actualiza</button>
+    </form>
+    <?!= include('JS') ?> <!-- aqui se incluyen los datos script -->
+</body>
+</html>
